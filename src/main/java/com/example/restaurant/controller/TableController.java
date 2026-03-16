@@ -2,9 +2,7 @@ package com.example.restaurant.controller;
 
 import com.example.restaurant.model.RestaurantTable;
 import com.example.restaurant.repository.TableRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
