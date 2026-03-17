@@ -1,91 +1,73 @@
 package com.example.restaurant.config;
 
-import com.example.restaurant.model.*;
-import com.example.restaurant.repository.*;
-import org.springframework.boot.CommandLineRunner;
+import com.example.restaurant.model.RestaurantTable;
+import com.example.restaurant.model.TableFeature;
+import com.example.restaurant.model.Zone;
+import com.example.restaurant.repository.TableRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.*;
+import java.util.Set;
 
 @Component
-public class DataInitializer implements CommandLineRunner {
+public class DataInitializer {
 
-    private final RestaurantTableRepository tableRepository;
-    private final ReservationRepository reservationRepository;
+    private final TableRepository tableRepository;
 
-    public DataInitializer(RestaurantTableRepository tableRepository,
-                           ReservationRepository reservationRepository) {
+    public DataInitializer(TableRepository tableRepository) {
         this.tableRepository = tableRepository;
-        this.reservationRepository = reservationRepository;
     }
 
-    @Override
-    public void run(String... args) {
-
+    @PostConstruct
+    public void init() {
         if (tableRepository.count() == 0) {
-            createTables();
+
+            tableRepository.save(new RestaurantTable(
+                    null,
+                    2,
+                    Zone.INDOOR,
+                    100,
+                    100,
+                    Set.of(TableFeature.WINDOW)
+            ));
+
+            tableRepository.save(new RestaurantTable(
+                    null,
+                    4,
+                    Zone.INDOOR,
+                    200,
+                    150,
+                    Set.of(TableFeature.HIGH_CHAIR)
+            ));
+
+            tableRepository.save(new RestaurantTable(
+                    null,
+                    6,
+                    Zone.OUTDOOR,
+                    300,
+                    200,
+                    Set.of(TableFeature.ACCESSIBLE)
+            ));
+
+            tableRepository.save(new RestaurantTable(
+                    null,
+                    2,
+                    Zone.OUTDOOR,
+                    120,
+                    250,
+                    Set.of(TableFeature.WINDOW, TableFeature.QUIET)
+            ));
+
+            tableRepository.save(new RestaurantTable(
+                    null,
+                    8,
+                    Zone.VIP,
+                    400,
+                    300,
+                    Set.of(TableFeature.QUIET)
+            ));
+
+            System.out.println("Demo tables created.");
         }
-
-        if (reservationRepository.count() == 0) {
-            createReservations();
-        }
-    }
-
-    private void createTables() {
-        Random random = new Random();
-
-        for (int i = 1; i <= 20; i++) {
-            RestaurantTable table = new RestaurantTable();
-            table.setCapacity(2 + random.nextInt(5)); // 2–6 inimest
-            table.setZone(randomZone());
-            table.setPosX(random.nextInt(500));
-            table.setPosY(random.nextInt(500));
-            table.setFeatures(randomFeatures());
-
-            tableRepository.save(table);
-        }
-
-        System.out.println("Created 20 demo tables.");
-    }
-
-    private void createReservations() {
-        Random random = new Random();
-        List<RestaurantTable> tables = tableRepository.findAll();
-
-        for (int i = 0; i < 10; i++) {
-            Reservation reservation = new Reservation();
-            RestaurantTable table = tables.get(random.nextInt(tables.size()));
-
-            reservation.setTableId(table.getId());
-            reservation.setDate(LocalDate.now().plusDays(random.nextInt(7))); // järgmise 7 päeva jooksul
-            reservation.setStartTime(LocalTime.of(12 + random.nextInt(8), 0)); // 12:00–20:00
-            reservation.setEndTime(reservation.getStartTime().plusHours(2));
-            reservation.setPeopleCount(1 + random.nextInt(table.getCapacity()));
-
-            reservationRepository.save(reservation);
-        }
-
-        System.out.println("Created 10 demo reservations.");
-    }
-
-    private Zone randomZone() {
-        Zone[] zones = Zone.values();
-        return zones[new Random().nextInt(zones.length)];
-    }
-
-    private Set<TableFeature> randomFeatures() {
-        TableFeature[] features = TableFeature.values();
-        Random random = new Random();
-
-        Set<TableFeature> set = new HashSet<>();
-        int count = random.nextInt(features.length + 1);
-
-        for (int i = 0; i < count; i++) {
-            set.add(features[random.nextInt(features.length)]);
-        }
-
-        return set;
     }
 }
