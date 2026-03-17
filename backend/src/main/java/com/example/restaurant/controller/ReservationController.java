@@ -1,23 +1,29 @@
 package com.example.restaurant.controller;
 
-import com.example.restaurant.model.Reservation;
-import com.example.restaurant.repository.ReservationRepository;
+import com.example.restaurant.dto.RecommendationRequest;
+import com.example.restaurant.model.RestaurantTable;
+import com.example.restaurant.service.RecommendationService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/reservations")
+@RequestMapping("/reservations")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ReservationController {
 
-    private final ReservationRepository reservationRepository;
+    private final RecommendationService recommendationService;
 
-    public ReservationController(ReservationRepository reservationRepository) {
-        this.reservationRepository = reservationRepository;
+    public ReservationController(RecommendationService recommendationService) {
+        this.recommendationService = recommendationService;
     }
 
-    @GetMapping
-    public List<Reservation> getAllReservations() {
-        return reservationRepository.findAll();
+    @PostMapping("/recommend")
+    public List<RestaurantTable> recommend(@RequestBody RecommendationRequest request) {
+        return recommendationService.recommendTables(
+                request.peopleCount(),
+                request.preferences(),
+                request.zone()
+        );
     }
 }
