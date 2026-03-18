@@ -23,49 +23,57 @@ public class DataInitializer {
         if (tableRepository.count() == 0) {
 
             tableRepository.save(new RestaurantTable(
-                    null,
-                    2,
-                    Zone.INDOOR,
-                    100,
-                    100,
-                    Set.of(TableFeature.WINDOW)
-            ));
+                null,
+                2,
+                Zone.INDOOR,
+                100,
+                100,
+                Set.of(TableFeature.WINDOW)
+        ));
 
             tableRepository.save(new RestaurantTable(
-                    null,
-                    4,
-                    Zone.INDOOR,
-                    200,
-                    150,
-                    Set.of(TableFeature.HIGH_CHAIR)
-            ));
+                null,
+                4,
+                Zone.INDOOR,
+                200,
+                150,
+                Set.of(TableFeature.HIGH_CHAIR)
+        ));
 
             tableRepository.save(new RestaurantTable(
-                    null,
-                    6,
-                    Zone.OUTDOOR,
-                    300,
-                    200,
-                    Set.of(TableFeature.ACCESSIBLE)
-            ));
+                null,
+                6,
+                Zone.OUTDOOR,
+                300,
+                200,
+                Set.of(TableFeature.ACCESSIBLE)
+        ));
 
             tableRepository.save(new RestaurantTable(
-                    null,
-                    2,
-                    Zone.OUTDOOR,
-                    120,
-                    250,
-                    Set.of(TableFeature.WINDOW, TableFeature.QUIET)
-            ));
+                null,
+                2,
+                Zone.OUTDOOR,
+                120,
+                250,
+                Set.of(TableFeature.WINDOW, TableFeature.QUIET)
+        ));       
 
             tableRepository.save(new RestaurantTable(
-                    null,
-                    8,
-                    Zone.VIP,
-                    400,
-                    300,
-                    Set.of(TableFeature.QUIET)
-            ));
+                null,
+                8,
+                Zone.VIP,
+                400,
+                300,
+                Set.of(TableFeature.QUIET)
+        ));
+            tableRepository.save(new RestaurantTable(
+                null,
+                4,
+                Zone.INDOOR,
+                250,
+                180,
+                Set.of(TableFeature.WINDOW)
+        ));
 
             System.out.println("Demo tables created.");
         }
