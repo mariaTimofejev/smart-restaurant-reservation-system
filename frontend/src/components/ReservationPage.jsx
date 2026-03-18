@@ -5,6 +5,8 @@ export default function ReservationPage() {
 
   const [tables, setTables] = useState([]);
 
+  const [recommendedTables, setRecommendedTables] = useState([]);
+
   useEffect(() => {
     getTables().then(res => setTables(res.data));
   }, []);

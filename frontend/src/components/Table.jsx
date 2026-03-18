@@ -21,7 +21,8 @@ export default function Table({ table, rank, isReserved }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: "white"
+        color: "black",
+        fontWeight: "bold"
       }}
     >
       {table.capacity}

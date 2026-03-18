@@ -1,5 +1,3 @@
-import { ZONES } from "../constants/zones";
-
 export const ZONES = [
   { value: "TERRACE", label: "Terrace" },
   { value: "MAIN_HALL", label: "Main Hall" },

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { getRecommendations } from "../api/reservations";
+import { ZONES } from "../constants/zones";
+import { FEATURES } from "../constants/features";
 
 export default function RecommendationForm({ setRecommendedTables }) {
 
