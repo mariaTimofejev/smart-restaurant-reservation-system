@@ -1,17 +1,28 @@
-export default function Table({ table }) {
-  const style = {
-    position: "absolute",
-    left: table.posX,
-    top: table.posY,
-    width: 60,
-    height: 60,
-    background: "#eee",
-    border: "2px solid #333",
-    borderRadius: 8,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
-  };
+export default function Table({ table, rank }) {
 
-  return <div style={style}>{table.capacity}</div>;
+  let color = "green";
+
+  if (rank === 0) color = "gold";
+  else if (rank === 1) color = "yellow";
+  else if (rank === 2) color = "lightgreen";
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: table.posX,
+        top: table.posY,
+        width: 50,
+        height: 50,
+        borderRadius: "50%",
+        background: color,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "white"
+      }}
+    >
+      {table.capacity}
+    </div>
+  );
 }
