@@ -1,10 +1,12 @@
-export default function Table({ table, rank }) {
+export default function Table({ table, rank, isReserved }) {
 
   let color = "green";
 
   if (rank === 0) color = "gold";
   else if (rank === 1) color = "yellow";
   else if (rank === 2) color = "lightgreen";
+
+  if (isReserved) color = "red";
 
   return (
     <div

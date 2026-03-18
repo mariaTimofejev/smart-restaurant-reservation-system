@@ -11,14 +11,11 @@ public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private Long tableId;
-
-    private LocalDate date;
-
-    private LocalTime startTime;
-    private LocalTime endTime;
-
-    private int peopleCount;
+    
+    Long id;
+    Long tableId;
+    LocalDate date;
+    LocalTime startTime;
+    LocalTime endTime;
+    int peopleCount;
 }

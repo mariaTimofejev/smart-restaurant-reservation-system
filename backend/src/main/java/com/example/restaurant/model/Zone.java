@@ -1,7 +1,7 @@
 package com.example.restaurant.model;
 
 public enum Zone {
-    INDOOR,
-    OUTDOOR,
-    VIP
+    TERRACE, 
+    MAIN_HALL, 
+    PRIVATE_ROOM
 }
