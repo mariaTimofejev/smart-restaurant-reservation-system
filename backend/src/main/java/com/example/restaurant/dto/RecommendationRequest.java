@@ -7,5 +7,7 @@ import java.util.Set;
 public record RecommendationRequest(
         int peopleCount,
         Set<TableFeature> preferences,
-        Zone zone
+        Zone zone,
+        LocalDate date,
+        LocalTime time
 ) {}
