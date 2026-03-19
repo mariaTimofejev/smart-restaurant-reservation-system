@@ -8,7 +8,12 @@ export default function FloorPlan() {
   const [selectedTable, setSelectedTable] = useState(null);
 
   const loadTables = async () => {
-    const res = await axios.get("http://localhost:8080/tables");
+    const res = await axios.get("http://localhost:8080/tables/status", {
+    params: {
+        date: selectedDate,
+        time: selectedTime
+    }
+});
     setTables(res.data);
   };
 
