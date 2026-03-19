@@ -6,12 +6,11 @@ import com.example.restaurant.model.Zone;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-public class ReservationRequest {
-
-    private int peopleCount;
-    private Set<TableFeature> preferences;
-    private Zone zone;
-
-    private LocalDateTime dateTime;
-    private int duration;
-}
+public record ReservationRequest(
+        Long tableId,
+        LocalDateTime dateTime,
+        String customerName,
+        int peopleCount,
+        Set<TableFeature> preferredFeatures,
+        Zone preferredZone
+) {}
