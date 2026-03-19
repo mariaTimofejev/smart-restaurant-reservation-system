@@ -1,4 +1,4 @@
-export default function Table({ table, rank, isReserved }) {
+export default function Table({table, rank, onClick }) {
 
   let color = "green";
 
@@ -6,10 +6,11 @@ export default function Table({ table, rank, isReserved }) {
   else if (rank === 1) color = "yellow";
   else if (rank === 2) color = "lightgreen";
 
-  if (isReserved) color = "red";
+  if (table.reserved) color = "red";
 
   return (
     <div
+      onClick={() => onClick(table)}
       style={{
         position: "absolute",
         left: table.posX,
@@ -21,7 +22,8 @@ export default function Table({ table, rank, isReserved }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: "black",
+        color: "white",
+        cursor: "pointer",
         fontWeight: "bold"
       }}
     >
