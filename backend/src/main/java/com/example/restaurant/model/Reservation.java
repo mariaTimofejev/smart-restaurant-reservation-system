@@ -1,21 +1,30 @@
 package com.example.restaurant.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-@Data
 public class Reservation {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     private RestaurantTable table;
 
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private LocalDate date;
+    private LocalTime time;
+
+    private String customerName;
+
+    public Reservation() {}
+
+    public Reservation(RestaurantTable table, LocalDate date, LocalTime time, String customerName) {
+        this.table = table;
+        this.date = date;
+        this.time = time;
+        this.customerName = customerName;
+    }
 }
