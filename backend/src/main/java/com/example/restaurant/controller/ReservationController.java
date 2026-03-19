@@ -9,21 +9,28 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/reservations")
-@CrossOrigin(origins = "http://localhost:5173")
 public class ReservationController {
 
-    private final RecommendationService recommendationService;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationController(RecommendationService recommendationService) {
-        this.recommendationService = recommendationService;
+    public ReservationController(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
     }
 
-    @PostMapping("/recommend")
-    public List<RestaurantTable> recommend(@RequestBody RecommendationRequest request) {
-        return recommendationService.recommendTables(
-                request.peopleCount(),
-                request.preferences(),
-                request.zone()
-        );
+    @PostMapping("/book")
+    public Reservation bookTable(@RequestBody Reservation reservation) {
+        // lihtne valideerimine: kas laud on vaba
+        boolean isFree = reservationRepository.findByTableIdAndDateAndStartTimeBeforeAndEndTimeAfter(
+                reservation.getTableId(),
+                reservation.getDate(),
+                reservation.getEndTime(),
+                reservation.getStartTime()
+        ).isEmpty();
+
+        if (!isFree) {
+            throw new RuntimeException("Table is already reserved in this time slot");
+        }
+
+        return reservationRepository.save(reservation);
     }
 }
