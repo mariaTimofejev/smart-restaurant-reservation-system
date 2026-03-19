@@ -1,4 +1,4 @@
-package com.example.restaurant.dto;
+package com.example.restaurant.controller;
 
 import com.example.restaurant.model.TableFeature;
 import com.example.restaurant.model.Zone;

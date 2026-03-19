@@ -20,6 +20,10 @@ public class RecommendationController {
 
     @PostMapping("/recommend")
     public List<RestaurantTable> recommend(@RequestBody RecommendationRequest request) {
+
+        // RecommendationService peab kasutama neid samu parameetreid:
+        // peopleCount, preferences, zone, date, time
+
         return recommendationService.recommendTables(
                 request.peopleCount(),
                 request.preferences(),
