@@ -10,12 +10,12 @@ import java.time.LocalTime;
 public class Reservation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    
-    Long id;
-    Long tableId;
-    LocalDate date;
-    LocalTime startTime;
-    LocalTime endTime;
-    int peopleCount;
+    @GeneratedValue
+    private Long id;
+
+    @ManyToOne
+    private RestaurantTable table;
+
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 }
