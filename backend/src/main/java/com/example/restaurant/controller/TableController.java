@@ -2,6 +2,9 @@ package com.example.restaurant.controller;
 
 import com.example.restaurant.model.RestaurantTable;
 import com.example.restaurant.repository.TableRepository;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import com.example.restaurant.dto.TableWithStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

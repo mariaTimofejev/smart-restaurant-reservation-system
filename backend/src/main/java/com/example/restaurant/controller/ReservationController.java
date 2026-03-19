@@ -4,6 +4,7 @@ import com.example.restaurant.model.Reservation;
 import com.example.restaurant.model.RestaurantTable;
 import com.example.restaurant.repository.ReservationRepository;
 import com.example.restaurant.repository.TableRepository;
+import com.example.restaurant.controller.ReservationRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -27,7 +28,7 @@ public class ReservationController {
 
         RestaurantTable table = tableRepository.findById(request.tableId())
                 .orElseThrow(() -> new RuntimeException("Table not found"));
-                
+
         boolean taken = reservationRepository.existsByTableAndDateAndTime(
                 table,
                 request.date(),
