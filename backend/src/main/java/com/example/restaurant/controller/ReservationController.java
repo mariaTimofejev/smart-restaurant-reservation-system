@@ -26,8 +26,8 @@ public class ReservationController {
     public Reservation createReservation(@RequestBody ReservationRequest request) {
 
         RestaurantTable table = tableRepository.findById(request.tableId())
-                .orElseThrow();
-
+                .orElseThrow(() -> new RuntimeException("Table not found"));
+                
         boolean taken = reservationRepository.existsByTableAndDateAndTime(
                 table,
                 request.date(),
