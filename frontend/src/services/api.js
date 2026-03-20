@@ -11,3 +11,11 @@ export const getReservations = () => {
 export const deleteReservation = (id) => {
   return axios.delete(`http://localhost:8080/reservations/${id}`);
 };
+
+export const updateReservation = (id, data) => {
+  return axios.put(`http://localhost:8080/reservations/${id}`, data);
+};
+
+export const updateTablePosition = (id, x, y) => {
+  return axios.put(`http://localhost:8080/tables/${id}/position`, { x, y });
+};
