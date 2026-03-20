@@ -1,123 +1,81 @@
 import { useState } from "react";
-import { getRecommendations } from "../api/reservations";
-import { ZONES } from "../constants/zones";
 
-export default function RecommendationForm({ setRecommendedTables }) {
-
-  const [peopleCount, setPeopleCount] = useState(2);
-  const [zone, setZone] = useState("INDOOR");
+export default function RecommendationForm({ setRecommendedTables, date, time }) {
+  const [peopleCount, setPeopleCount] = useState(1);
   const [preferences, setPreferences] = useState([]);
-  const [tables, setTables] = useState([]);
-  const [dateTime, setDateTime] = useState("");
-  const [duration, setDuration] = useState(2);
 
-  const handleSubmit = async () => {
-    const data = {
+  const featureOptions = ["WINDOW", "HIGH_CHAIR", "OUTDOOR", "QUIET"];
+
+  function togglePreference(pref) {
+    if (preferences.includes(pref)) {
+      setPreferences(preferences.filter(p => p !== pref));
+    } else {
+      setPreferences([...preferences, pref]);
+    }
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const payload = {
       peopleCount,
       preferences,
-      zone,
-      dateTime,
-      duration
+      date,
+      time
     };
 
-    try {
-      const response = await getRecommendations(data);
-      setTables(response.data);
-      setRecommendedTables(response.data);
-    } catch (error) {
-      console.error("Error fetching recommendations:", error);
-    }
-  };
+    const response = await fetch("http://localhost:8080/recommend", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
 
-  const togglePreference = (value) => {
-    setPreferences((prev) =>
-      prev.includes(value)
-        ? prev.filter((p) => p !== value)
-        : [...prev, value]
-    );
-  };
+    if (!response.ok) {
+      alert("Soovituste päring ebaõnnestus");
+      return;
+    }
+
+    const data = await response.json();
+    setRecommendedTables(data);
+  }
 
   return (
-    <div>
-      <h2>Find Recommended Tables</h2>
+    <form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
+      <h3>Soovita lauda</h3>
 
-      <label>People Count:</label>
+      <label>Inimeste arv:</label>
       <input
         type="number"
+        min="1"
         value={peopleCount}
         onChange={(e) => setPeopleCount(Number(e.target.value))}
       />
 
-      <br />
-
-      <label>Zone:</label>
-      <select value={zone} onChange={(e) => setZone(e.target.value)}>
-        {ZONES.map((z) => (
-          <option key={z} value={z}>{z}</option>
-        ))}
-      </select>
-
-      <br />
-
-      <label>Reservation Date & Time:</label>
-      <input
-        type="datetime-local"
-        value={dateTime}
-        onChange={(e) => setDateTime(e.target.value)}
-      />
-
-      <br />
-
-      <label>Duration (hours):</label>
-      <input
-        type="number"
-        value={duration}
-        min={1}
-        max={8}
-        onChange={(e) => setDuration(Number(e.target.value))}
-      />
-
-      <br />
-
-      <label>Preferences:</label>
-      <div>
-        {["WINDOW", "QUIET", "ACCESSIBLE", "HIGH_CHAIR"].map((feature) => (
-          <label key={feature}>
-            <input
-              type="checkbox"
-              checked={preferences.includes(feature)}
-              onChange={() => togglePreference(feature)}
-            />
-            {feature}
-          </label>
-        ))}
+      <div style={{ marginTop: "10px" }}>
+        <label>Eelistused:</label>
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          {featureOptions.map((f) => (
+            <button
+              type="button"
+              key={f}
+              onClick={() => togglePreference(f)}
+              style={{
+                padding: "5px 10px",
+                backgroundColor: preferences.includes(f) ? "#90ee90" : "#e0e0e0",
+                border: "1px solid #555",
+                borderRadius: "5px",
+                cursor: "pointer"
+              }}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <br />
-
-      <button onClick={handleSubmit}>Soovita lauda</button>
-
-      <h3>Recommended Tables:</h3>
-      <table border="1">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Capacity</th>
-            <th>Zone</th>
-            <th>Features</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tables.map((t) => (
-            <tr key={t.id}>
-              <td>{t.id}</td>
-              <td>{t.capacity}</td>
-              <td>{t.zone}</td>
-              <td>{t.features?.join(", ")}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+      <button type="submit" style={{ marginTop: "15px" }}>
+        Leia parim laud
+      </button>
+    </form>
   );
 }

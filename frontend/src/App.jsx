@@ -3,6 +3,7 @@ import TableMap from "./components/TableMap";
 import ReservationForm from "./components/ReservationForm";
 import RecommendationForm from "./components/RecommendationForm";
 import RestaurantFloor from "./components/RestaurantFloor";
+import RestaurantFloorMap from "./components/RestaurantFloorMap";
 
 export default function App() {
   const [selectedTable, setSelectedTable] = useState(null);
@@ -21,6 +22,7 @@ export default function App() {
       </div>
 
       <div style={{ display: "flex", gap: "40px" }}>
+
         <div>
           <TableMap
             date={date}
@@ -42,6 +44,7 @@ export default function App() {
           time={time}
         />
         <RestaurantFloor recommendedTables={recommendedTables} />
+        <RestaurantFloorMap recommendedTables={recommendedTables} />
       </div>
     </div>
   );

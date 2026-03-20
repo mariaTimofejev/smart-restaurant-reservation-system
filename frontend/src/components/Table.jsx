@@ -1,40 +1,28 @@
-export default function Table({ table, rank, onClick }) {
-  
-  const data = table.table;
-  const reserved = table.reserved;
-
-  // Rank värvid (kui laud pole broneeritud)
-  let color = "green";
-
-  if (rank === 0) color = "gold";
-  else if (rank === 1) color = "yellow";
-  else if (rank === 2) color = "lightgreen";
-
-  // Kui laud on broneeritud → punane
-  if (reserved) color = "red";
+export default function Table({ table, rank }) {
+  const color =
+    rank === 0 ? "#90ee90" :       // parim soovitus
+    rank === 1 ? "#c8f7c5" :       // teine soovitus
+    rank >= 2 ? "#e8ffe8" :        // muu soovitus
+    "#e0e0e0";                     // pole soovitatud
 
   return (
     <div
-      onClick={() => onClick(table)}
       style={{
         position: "absolute",
-        left: data.posX,
-        top: data.posY,
-        width: 50,
-        height: 50,
-        borderRadius: "50%",
-        background: color,
+        left: table.posX,
+        top: table.posY,
+        width: 80,
+        height: 80,
+        backgroundColor: color,
+        border: "2px solid #555",
+        borderRadius: "10px",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: "white",
-        cursor: reserved ? "not-allowed" : "pointer",
-        fontWeight: "bold",
-        userSelect: "none",
-        border: "2px solid black"
+        fontWeight: "bold"
       }}
     >
-      {data.capacity}
+      {table.id}
     </div>
   );
 }
