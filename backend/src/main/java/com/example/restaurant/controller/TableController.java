@@ -5,6 +5,7 @@ import com.example.restaurant.model.RestaurantTable;
 import com.example.restaurant.repository.ReservationRepository;
 import com.example.restaurant.repository.TableRepository;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -26,14 +27,14 @@ public class TableController {
 
     @GetMapping("/status")
     public List<TableWithStatus> getTablesWithStatus(
-            @RequestParam LocalDate date,
-            @RequestParam LocalTime time
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime time
     ) {
-        return tableRepository.findAll().stream()
-                .map(t -> new TableWithStatus(
-                        t,
-                        reservationRepository.existsByTableAndDateAndTime(t, date, time)
-                ))
-                .toList();
+    return tableRepository.findAll().stream()
+            .map(table -> new TableWithStatus(
+                    table,
+                    reservationRepository.existsByTableAndDateAndTime(table, date, time)
+            ))
+            .toList();
     }
 }
