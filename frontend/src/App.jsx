@@ -4,6 +4,7 @@ import ReservationForm from "./components/ReservationForm";
 import RecommendationForm from "./components/RecommendationForm";
 import RestaurantFloor from "./components/RestaurantFloor";
 import RestaurantFloorMap from "./components/RestaurantFloorMap";
+import ReservationList from "./components/ReservationList";
 
 export default function App() {
   const [selectedTable, setSelectedTable] = useState(null);
@@ -46,6 +47,7 @@ export default function App() {
         <RestaurantFloor recommendedTables={recommendedTables} />
         <RestaurantFloorMap recommendedTables={recommendedTables} />
       </div>
+        <ReservationList />
     </div>
   );
 }
