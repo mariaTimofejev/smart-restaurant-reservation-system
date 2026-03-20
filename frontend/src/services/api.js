@@ -7,3 +7,7 @@ export const getTables = () => {
 export const getReservations = () => {
   return axios.get("http://localhost:8080/reservations");
 };
+
+export const deleteReservation = (id) => {
+  return axios.delete(`http://localhost:8080/reservations/${id}`);
+};
