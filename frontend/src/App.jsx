@@ -2,6 +2,7 @@ import { useState } from "react";
 import RestaurantFloor from "./components/RestaurantFloor";
 import ReservationPage from "./components/ReservationPage";
 import RecommendationForm from "./components/RecommendationForm";
+import ReservationForm from "./components/ReservationForm";
 
 export default function App() {
 
@@ -16,6 +17,9 @@ export default function App() {
       <RestaurantFloor recommendedTables={recommendedTables} />
 
       <ReservationPage />
+
+      <ReservationForm />
+
     </div>
   );
 }
