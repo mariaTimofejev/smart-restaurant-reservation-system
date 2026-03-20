@@ -1,11 +1,18 @@
 import { useState } from "react";
 
-export default function ReservationForm() {
-  const [tableId, setTableId] = useState("");
+export default function ReservationForm({ preselectedTableId }) {
+  const [tableId, setTableId] = useState(preselectedTableId || "");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [peopleCount, setPeopleCount] = useState(1);
+
+  useEffect(() => {
+    if (preselectedTableId) {
+      setTableId(preselectedTableId);
+    }
+  }, [preselectedTableId]);
+
 
   async function handleSubmit(e) {
     e.preventDefault();
