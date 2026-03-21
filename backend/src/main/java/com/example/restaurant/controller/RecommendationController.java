@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/reservations")
-@CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/recommend")
+@CrossOrigin
 public class RecommendationController {
 
     private final RecommendationService recommendationService;
@@ -18,15 +18,8 @@ public class RecommendationController {
         this.recommendationService = recommendationService;
     }
 
-    @PostMapping("/recommend")
+    @PostMapping
     public List<RestaurantTable> recommend(@RequestBody RecommendationRequest request) {
-
-        return recommendationService.recommendTables(
-                request.peopleCount(),
-                request.preferences(),
-                request.zone(),
-                request.date(),
-                request.time()
-        );
+        return recommendationService.recommendTables(request);
     }
 }

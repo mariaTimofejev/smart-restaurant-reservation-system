@@ -4,14 +4,14 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+
 import java.util.Set;
 
 @Entity
-@Table(name = "restaurant_table")  
+@Table(name = "restaurant_table")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class RestaurantTable {
 
     @Id
@@ -28,8 +28,8 @@ public class RestaurantTable {
 
     @ElementCollection(targetClass = TableFeature.class)
     @CollectionTable(
-        name = "table_features",
-        joinColumns = @JoinColumn(name = "table_id")
+            name = "table_features",
+            joinColumns = @JoinColumn(name = "table_id")
     )
     @Column(name = "feature")
     @Enumerated(EnumType.STRING)

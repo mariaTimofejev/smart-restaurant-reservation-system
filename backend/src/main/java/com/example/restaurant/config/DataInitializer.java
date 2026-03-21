@@ -6,12 +6,14 @@ import com.example.restaurant.repository.ReservationRepository;
 import com.example.restaurant.repository.TableRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Profile;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Random;
 
+@Profile("dev")
 @Component
 public class DataInitializer implements CommandLineRunner {
 
@@ -46,7 +48,13 @@ public class DataInitializer implements CommandLineRunner {
 
         for (int i = 0; i < reservationCount; i++) {
 
+            if (tables.isEmpty()) {
+                System.out.println("No tables found, skipping table assignment.");
+                return;
+            }
+
             RestaurantTable table = tables.get(random.nextInt(tables.size()));
+            
 
             LocalDate date = LocalDate.now().plusDays(random.nextInt(4)); // täna + 0..3 päeva
             LocalTime time = times[random.nextInt(times.length)];

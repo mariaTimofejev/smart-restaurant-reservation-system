@@ -26,14 +26,14 @@ public class RecommendationService {
 
     public List<RestaurantTable> recommendTables(RecommendationRequest request) {
 
-        LocalDate date = request.date();
-        LocalTime time = request.time();
-        int people = request.peopleCount();
-        Set<TableFeature> preferredFeatures = request.preferences();
-        Zone preferredZone = request.zone();
+        LocalDate date = LocalDate.parse(request.getDate());
+        LocalTime time = LocalTime.parse(request.getTime());
+
+        int people = request.getPeopleCount();
+        List<String> preferredFeatures = request.getPreferences();
+        String preferredZone = request.getZone();
 
         List<RestaurantTable> tables = tableRepository.findAll();
-
         List<ScoredTable> scored = new ArrayList<>();
 
         for (RestaurantTable table : tables) {
@@ -45,23 +45,27 @@ public class RecommendationService {
 
             int score = 0;
 
-            if (preferredZone != null && table.getZone() == preferredZone) {
-                score += 50;
+            if (preferredZone != null && !preferredZone.isBlank()) {
+                if (table.getZone().name().equalsIgnoreCase(preferredZone)) {
+                    score += 50;
+                }
             }
 
             if (preferredFeatures != null) {
-                for (TableFeature feature : preferredFeatures) {
-                    if (table.getFeatures().contains(feature)) {
-                        score += 10;
+                for (String feature : preferredFeatures) {
+                    try {
+                        TableFeature enumFeature = TableFeature.valueOf(feature);
+                        if (table.getFeatures().contains(enumFeature)) {
+                            score += 10;
+                        }
+                    } catch (IllegalArgumentException ignored) {
                     }
                 }
             }
 
             if (table.getCapacity() == people) {
                 score += 20;
-            }
-
-            if (table.getCapacity() > people) {
+            } else if (table.getCapacity() > people) {
                 score += 5;
             }
 
@@ -74,7 +78,6 @@ public class RecommendationService {
                 .map(s -> s.table)
                 .toList();
     }
-
     private static class ScoredTable {
         RestaurantTable table;
         int score;
@@ -83,18 +86,5 @@ public class RecommendationService {
             this.table = table;
             this.score = score;
         }
-    }
-
-    public List<Table> recommend(RecommendationRequest req) {
-    List<Table> all = tableRepository.findAll();
-
-    Stream<Table> stream = all.stream();
-    if (req.getZone() != null && !req.getZone().isBlank()) {
-        stream = stream.filter(t -> req.getZone().equalsIgnoreCase(t.getZone()));
-    }
-
-    stream = stream.filter(t -> t.getCapacity() >= req.getPeopleCount());
-
-    return stream.toList();
     }
 }
