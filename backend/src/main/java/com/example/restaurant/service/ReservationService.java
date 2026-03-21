@@ -7,48 +7,38 @@ import com.example.restaurant.repository.ReservationRepository;
 import com.example.restaurant.repository.TableRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
-
 @Service
 public class ReservationService {
 
-    private final TableRepository tableRepository;
     private final ReservationRepository reservationRepository;
+    private final TableRepository tableRepository;
 
-    public ReservationService(TableRepository tableRepository,
-                              ReservationRepository reservationRepository) {
-        this.tableRepository = tableRepository;
+    public ReservationService(ReservationRepository reservationRepository,
+                              TableRepository tableRepository) {
         this.reservationRepository = reservationRepository;
+        this.tableRepository = tableRepository;
     }
 
     public Reservation createReservation(ReservationRequest request) {
 
-        // 1) Leia laud
-        RestaurantTable table = tableRepository.findById(request.tableId())
-                .orElseThrow(() -> new NoSuchElementException("Table not found with id: " + request.tableId()));
+        RestaurantTable table = tableRepository.findById(request.getTableId())
+                .orElseThrow(() -> new RuntimeException("Table not found"));
 
-        // 2) Kontrolli, kas inimesed mahuvad
-        if (request.peopleCount() > table.getCapacity()) {
-            throw new IllegalArgumentException("Table capacity is too small for " + request.peopleCount() + " people");
-        }
-
-        // 3) Kontrolli, kas laud on sel ajal juba kinni
         boolean exists = reservationRepository.existsByTableAndDateAndTime(
                 table,
-                request.date(),
-                request.time()
+                request.getDate(),
+                request.getTime()
         );
 
         if (exists) {
-            throw new IllegalStateException("Table is already reserved at this time");
+            throw new RuntimeException("Table already reserved for this time");
         }
 
-        // 4) Loo ja salvesta broneering
         Reservation reservation = new Reservation(
                 table,
-                request.date(),
-                request.time(),
-                request.customerName()
+                request.getDate(),
+                request.getTime(),
+                request.getCustomerName()
         );
 
         return reservationRepository.save(reservation);

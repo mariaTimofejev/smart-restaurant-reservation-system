@@ -2,6 +2,8 @@ package com.example.restaurant.config;
 
 import com.example.restaurant.model.Reservation;
 import com.example.restaurant.model.RestaurantTable;
+import com.example.restaurant.model.Zone;
+import com.example.restaurant.model.TableFeature;
 import com.example.restaurant.repository.ReservationRepository;
 import com.example.restaurant.repository.TableRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -12,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 @Profile("dev")
 @Component
@@ -29,10 +32,27 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        if (reservationRepository.count() > 0) {
-            return; 
+        // 1. Loo lauad, kui neid pole
+        if (tableRepository.count() == 0) {
+            for (int i = 1; i <= 5; i++) {
+                RestaurantTable table = new RestaurantTable();
+                table.setCapacity(2 + i);      // 3–7 kohta
+                table.setZone(Zone.MAIN);      // vali sobiv tsoon
+                table.setPosX(50 * i);         // suvaline X
+                table.setPosY(30 * i);         // suvaline Y
+                table.setFeatures(Set.of());   // tühi feature list
+
+                tableRepository.save(table);
+            }
+            System.out.println("Created 5 test tables.");
         }
 
+        // 2. Kui reserveeringud juba olemas, ära tee midagi
+        if (reservationRepository.count() > 0) {
+            return;
+        }
+
+        // 3. Lae lauad uuesti pärast loomist
         List<RestaurantTable> tables = tableRepository.findAll();
         Random random = new Random();
 
@@ -44,24 +64,18 @@ public class DataInitializer implements CommandLineRunner {
                 LocalTime.of(20, 0)
         };
 
-        int reservationCount = 15; 
+        int reservationCount = 15;
 
         for (int i = 0; i < reservationCount; i++) {
 
-            if (tables.isEmpty()) {
-                System.out.println("No tables found, skipping table assignment.");
-                return;
-            }
-
             RestaurantTable table = tables.get(random.nextInt(tables.size()));
-            
 
             LocalDate date = LocalDate.now().plusDays(random.nextInt(4)); // täna + 0..3 päeva
             LocalTime time = times[random.nextInt(times.length)];
 
             boolean exists = reservationRepository.existsByTableAndDateAndTime(table, date, time);
             if (exists) {
-                i--; 
+                i--; // proovi uuesti
                 continue;
             }
 

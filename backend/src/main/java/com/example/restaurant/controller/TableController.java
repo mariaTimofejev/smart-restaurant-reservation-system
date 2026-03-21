@@ -12,7 +12,6 @@ import java.time.LocalTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/tables")
 @CrossOrigin(origins = "http://localhost:5173")
 public class TableController {
 
@@ -24,17 +23,21 @@ public class TableController {
         this.tableRepository = tableRepository;
         this.reservationRepository = reservationRepository;
     }
+    @GetMapping("/api/tables")
+    public List<RestaurantTable> getAllTables() {
+        return tableRepository.findAll();
+    }
 
-    @GetMapping("/status")
+    @GetMapping("/tables/status")
     public List<TableWithStatus> getTablesWithStatus(
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime time
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime time
     ) {
-    return tableRepository.findAll().stream()
-            .map(table -> new TableWithStatus(
-                    table,
-                    reservationRepository.existsByTableAndDateAndTime(table, date, time)
-            ))
-            .toList();
+        return tableRepository.findAll().stream()
+                .map(table -> new TableWithStatus(
+                        table,
+                        reservationRepository.existsByTableAndDateAndTime(table, date, time)
+                ))
+                .toList();
     }
 }

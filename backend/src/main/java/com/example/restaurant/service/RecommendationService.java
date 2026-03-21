@@ -2,15 +2,12 @@ package com.example.restaurant.service;
 
 import com.example.restaurant.dto.RecommendationRequest;
 import com.example.restaurant.model.RestaurantTable;
-import com.example.restaurant.model.TableFeature;
-import com.example.restaurant.model.Zone;
 import com.example.restaurant.repository.ReservationRepository;
 import com.example.restaurant.repository.TableRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class RecommendationService {
@@ -26,65 +23,42 @@ public class RecommendationService {
 
     public List<RestaurantTable> recommendTables(RecommendationRequest request) {
 
-        LocalDate date = LocalDate.parse(request.getDate());
-        LocalTime time = LocalTime.parse(request.getTime());
+        List<RestaurantTable> allTables = tableRepository.findAll();
 
-        int people = request.getPeopleCount();
-        List<String> preferredFeatures = request.getPreferences();
-        String preferredZone = request.getZone();
+        List<RestaurantTable> available = allTables.stream()
+                .filter(t -> !reservationRepository.existsByTableAndDateAndTime(
+                        t, request.getDate(), request.getTime()))
+                .collect(Collectors.toList());
 
-        List<RestaurantTable> tables = tableRepository.findAll();
-        List<ScoredTable> scored = new ArrayList<>();
+        Map<RestaurantTable, Integer> scores = new HashMap<>();
 
-        for (RestaurantTable table : tables) {
-
-            boolean reserved = reservationRepository.existsByTableAndDateAndTime(table, date, time);
-            if (reserved) continue;
-
-            if (table.getCapacity() < people) continue;
-
+        for (RestaurantTable table : available) {
             int score = 0;
 
-            if (preferredZone != null && !preferredZone.isBlank()) {
-                if (table.getZone().name().equalsIgnoreCase(preferredZone)) {
-                    score += 50;
-                }
+            if (table.getCapacity() == request.getPartySize()) score += 10;
+            else if (table.getCapacity() >= request.getPartySize() + 1 &&
+                     table.getCapacity() <= request.getPartySize() + 2) score += 5;
+            else if (table.getCapacity() > request.getPartySize() + 2) score -= 5;
+
+            if (request.getPreferences() != null) {
+                if (request.getPreferences().contains("WINDOW") &&
+                        table.getFeatures().contains("WINDOW")) score += 10;
+
+                if (request.getPreferences().contains("QUIET") &&
+                        table.getFeatures().contains("QUIET")) score += 10;
             }
 
-            if (preferredFeatures != null) {
-                for (String feature : preferredFeatures) {
-                    try {
-                        TableFeature enumFeature = TableFeature.valueOf(feature);
-                        if (table.getFeatures().contains(enumFeature)) {
-                            score += 10;
-                        }
-                    } catch (IllegalArgumentException ignored) {
-                    }
-                }
+            switch (table.getZone()) {
+                case MAIN -> score += 5;
+                case TERRACE -> score += 3;
+                case BAR -> score += 1;
             }
 
-            if (table.getCapacity() == people) {
-                score += 20;
-            } else if (table.getCapacity() > people) {
-                score += 5;
-            }
-
-            scored.add(new ScoredTable(table, score));
+            scores.put(table, score);
         }
 
-        scored.sort((a, b) -> Integer.compare(b.score, a.score));
-
-        return scored.stream()
-                .map(s -> s.table)
-                .toList();
-    }
-    private static class ScoredTable {
-        RestaurantTable table;
-        int score;
-
-        ScoredTable(RestaurantTable table, int score) {
-            this.table = table;
-            this.score = score;
-        }
+        return available.stream()
+                .sorted((a, b) -> scores.get(b) - scores.get(a))
+                .collect(Collectors.toList());
     }
 }

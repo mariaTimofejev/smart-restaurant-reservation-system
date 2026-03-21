@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ReservationForm({ preselectedTableId }) {
   const [tableId, setTableId] = useState(preselectedTableId || "");

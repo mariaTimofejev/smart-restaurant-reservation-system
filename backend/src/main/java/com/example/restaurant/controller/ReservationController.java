@@ -6,7 +6,7 @@ import com.example.restaurant.service.ReservationService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/reservations")
+@RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:5173")
 public class ReservationController {
 
@@ -16,7 +16,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping
+    @PostMapping("/reservations")
     public Reservation createReservation(@RequestBody ReservationRequest request) {
         return reservationService.createReservation(request);
     }
