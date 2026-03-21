@@ -43,15 +43,12 @@ public class RecommendationService {
 
             if (table.getCapacity() < people) continue;
 
-            // 2.3) Arvuta skoor
             int score = 0;
 
-            // +50 kui tsoon sobib
             if (preferredZone != null && table.getZone() == preferredZone) {
                 score += 50;
             }
 
-            // +10 iga sobiva funktsiooni eest
             if (preferredFeatures != null) {
                 for (TableFeature feature : preferredFeatures) {
                     if (table.getFeatures().contains(feature)) {
@@ -60,12 +57,10 @@ public class RecommendationService {
                 }
             }
 
-            // +20 kui laud on täpselt sobiva suurusega
             if (table.getCapacity() == people) {
                 score += 20;
             }
 
-            // +5 kui laud on natuke suurem
             if (table.getCapacity() > people) {
                 score += 5;
             }
@@ -73,16 +68,13 @@ public class RecommendationService {
             scored.add(new ScoredTable(table, score));
         }
 
-        // 3) Sorteeri skoori järgi
         scored.sort((a, b) -> Integer.compare(b.score, a.score));
 
-        // 4) Tagasta ainult lauad
         return scored.stream()
                 .map(s -> s.table)
                 .toList();
     }
 
-    // Sisemine klass skoori hoidmiseks
     private static class ScoredTable {
         RestaurantTable table;
         int score;
@@ -91,5 +83,18 @@ public class RecommendationService {
             this.table = table;
             this.score = score;
         }
+    }
+
+    public List<Table> recommend(RecommendationRequest req) {
+    List<Table> all = tableRepository.findAll();
+
+    Stream<Table> stream = all.stream();
+    if (req.getZone() != null && !req.getZone().isBlank()) {
+        stream = stream.filter(t -> req.getZone().equalsIgnoreCase(t.getZone()));
+    }
+
+    stream = stream.filter(t -> t.getCapacity() >= req.getPeopleCount());
+
+    return stream.toList();
     }
 }

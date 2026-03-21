@@ -13,6 +13,14 @@ export default function RestaurantFloorMap({ recommendedTables = [] }) {
     getTables().then(res => setTables(res.data));
   }, []);
 
+  const isZoneMatch = (table.zone === selectedZone || selectedZone === "");
+  const color = isZoneMatch
+  ? rank === 0 ? "#90ee90"
+  : rank === 1 ? "#c8f7c5"
+  : rank >= 2 ? "#e8ffe8"
+  : "#e0e0e0"
+  : "#cccccc";
+
   return (
     <div
       style={{

@@ -1,8 +1,9 @@
 import { useState } from "react";
 
-export default function RecommendationForm({ setRecommendedTables, date, time }) {
+export default function RecommendationForm({ setRecommendedTables, date, time, setSelectedZone }) {
   const [peopleCount, setPeopleCount] = useState(1);
   const [preferences, setPreferences] = useState([]);
+  const [zone, setZone] = useState("");
 
   const featureOptions = ["WINDOW", "HIGH_CHAIR", "OUTDOOR", "QUIET"];
 
@@ -21,8 +22,12 @@ export default function RecommendationForm({ setRecommendedTables, date, time })
       peopleCount,
       preferences,
       date,
-      time
+      time,
+      zone
     };
+
+    // anna tsoon edasi ka visuaalsele plaanile
+    setSelectedZone(zone);
 
     const response = await fetch("http://localhost:8080/recommend", {
       method: "POST",
@@ -50,6 +55,19 @@ export default function RecommendationForm({ setRecommendedTables, date, time })
         value={peopleCount}
         onChange={(e) => setPeopleCount(Number(e.target.value))}
       />
+
+      <div style={{ marginTop: "10px" }}>
+        <label>Tsoon:</label>
+        <select
+          value={zone}
+          onChange={(e) => setZone(e.target.value)}
+        >
+          <option value="">Kõik tsoonid</option>
+          <option value="INDOOR">Saal</option>
+          <option value="TERRACE">Terrass</option>
+          <option value="PRIVATE">Privaatruum</option>
+        </select>
+      </div>
 
       <div style={{ marginTop: "10px" }}>
         <label>Eelistused:</label>
