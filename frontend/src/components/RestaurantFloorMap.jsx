@@ -2,24 +2,20 @@ import { useEffect, useState } from "react";
 import { getTables } from "../services/api";
 import Table from "./Table";
 
-export default function RestaurantFloorMap({ recommendedTables = [] }) {
+export default function RestaurantFloorMap({ recommendedTables = [], selectedZone }) {
   const [tables, setTables] = useState([]);
-
-  const getRecommendationRank = (tableId) => {
-    return recommendedTables.findIndex(t => t.id === tableId);
-  };
 
   useEffect(() => {
     getTables().then(res => setTables(res.data));
   }, []);
 
-  const isZoneMatch = (table.zone === selectedZone || selectedZone === "");
-  const color = isZoneMatch
-  ? rank === 0 ? "#90ee90"
-  : rank === 1 ? "#c8f7c5"
-  : rank >= 2 ? "#e8ffe8"
-  : "#e0e0e0"
-  : "#cccccc";
+  const getRecommendationRank = (tableId) => {
+    return recommendedTables.findIndex(t => t.id === tableId);
+  };
+
+  const isZoneMatch = (tableZone) => {
+    return selectedZone === "" || selectedZone === tableZone;
+  };
 
   return (
     <div
@@ -28,16 +24,39 @@ export default function RestaurantFloorMap({ recommendedTables = [] }) {
         width: 800,
         height: 600,
         border: "1px solid #ccc",
-        marginTop: "20px"
+        marginTop: "20px",
+        backgroundColor: "#fafafa"
       }}
     >
-      {tables.map(t => (
-        <Table
-          key={t.id}
-          table={t}
-          rank={getRecommendationRank(t.id)}
-        />
-      ))}
+      <h3 style={{ margin: "10px" }}>Restorani saaliplaan</h3>
+
+      {tables.map((t) => {
+        const rank = getRecommendationRank(t.id);
+        const zoneMatch = isZoneMatch(t.zone);
+
+        // Värviloogika:
+        // 1) Kui tsoon ei sobi → hall
+        // 2) Kui tsoon sobib → kasuta soovituse värve
+        let color = "#e0e0e0"; // vaikimisi hall
+
+        if (zoneMatch) {
+          if (rank === 0) color = "#90ee90";       // parim soovitus
+          else if (rank === 1) color = "#c8f7c5";  // teine soovitus
+          else if (rank >= 2) color = "#e8ffe8";   // muu soovitus
+          else color = "#ffffff";                  // sobiv tsoon, aga mitte soovitatud
+        } else {
+          color = "#cccccc"; // teised tsoonid hallid
+        }
+
+        return (
+          <Table
+            key={t.id}
+            table={t}
+            rank={rank}
+            color={color}
+          />
+        );
+      })}
     </div>
   );
 }

@@ -1,10 +1,4 @@
-export default function Table({ table, rank }) {
-  const color =
-    rank === 0 ? "#90ee90" :       // parim soovitus
-    rank === 1 ? "#c8f7c5" :       // teine soovitus
-    rank >= 2 ? "#e8ffe8" :        // muu soovitus
-    "#e0e0e0";                     // pole soovitatud
-
+export default function Table({ table, rank, color }) {
   return (
     <div
       style={{
