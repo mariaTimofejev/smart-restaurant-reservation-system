@@ -1,99 +1,56 @@
 import { useState, useEffect } from "react";
 
-export default function ReservationForm({ preselectedTableId }) {
-  const [tableId, setTableId] = useState(preselectedTableId || "");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
+export default function ReservationForm({ preselectedTableId, date, time, onRefresh }) {
   const [customerName, setCustomerName] = useState("");
-  const [peopleCount, setPeopleCount] = useState(1);
+  const [partySize, setPartySize] = useState(1);
+  const [tableId, setTableId] = useState("");
 
+  // Kui kasutaja klikib lauda, täidame vormi automaatselt
   useEffect(() => {
     if (preselectedTableId) {
       setTableId(preselectedTableId);
     }
   }, [preselectedTableId]);
 
+  async function submitReservation() {
+    await fetch("http://localhost:8080/api/reservations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tableId,
+        date,
+        time,
+        customerName,
+        partySize,
+      }),
+    });
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+    alert("Broneering tehtud!");
 
-    const payload = {
-      tableId: Number(tableId),
-      date,
-      time,
-      customerName,
-      peopleCount: Number(peopleCount)
-    };
-
-    try {
-      const response = await fetch("http://localhost:8080/reservations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        alert("Broneering ebaõnnestus: " + errorText);
-        return;
-      }
-
-      const data = await response.json();
-      alert("Broneering õnnestus! Broneeringu ID: " + data.id);
-
-    } catch (err) {
-      alert("Võrguviga: " + err.message);
-    }
+    if (onRefresh) onRefresh();
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 400 }}>
+    <div style={{ padding: "20px", border: "1px solid #ddd", borderRadius: "10px" }}>
       <h2>Tee broneering</h2>
 
-      <label>Laud (ID):</label>
-      <input
-        type="number"
-        value={tableId}
-        onChange={(e) => setTableId(e.target.value)}
-        required
-      />
+      <div>Laud: <input value={tableId} readOnly /></div>
+      <div>Kuupäev: <input value={date} readOnly /></div>
+      <div>Kellaaeg: <input value={time} readOnly /></div>
 
-      <label>Kuupäev:</label>
-      <input
-        type="date"
-        value={date}
-        onChange={(e) => setDate(e.target.value)}
-        required
-      />
+      <div>
+        Kliendi nimi:
+        <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
+      </div>
 
-      <label>Kellaaeg:</label>
-      <input
-        type="time"
-        value={time}
-        onChange={(e) => setTime(e.target.value)}
-        required
-      />
+      <div>
+        Inimeste arv:
+        <select value={partySize} onChange={(e) => setPartySize(e.target.value)}>
+          {[1,2,3,4,5,6].map(n => <option key={n}>{n}</option>)}
+        </select>
+      </div>
 
-      <label>Kliendi nimi:</label>
-      <input
-        type="text"
-        value={customerName}
-        onChange={(e) => setCustomerName(e.target.value)}
-        required
-      />
-
-      <label>Inimeste arv:</label>
-      <input
-        type="number"
-        min="1"
-        value={peopleCount}
-        onChange={(e) => setPeopleCount(e.target.value)}
-        required
-      />
-
-      <button type="submit" style={{ marginTop: 10 }}>
-        Tee broneering
-      </button>
-    </form>
+      <button onClick={submitReservation}>Tee broneering</button>
+    </div>
   );
 }
