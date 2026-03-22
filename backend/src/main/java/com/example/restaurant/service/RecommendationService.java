@@ -56,12 +56,19 @@ public class RecommendationService {
 
             // Zone score (ONLY ONCE)
             switch (table.getZone()) {
-                case MAIN -> score += 5;
-                case TERRACE -> score += 3;
-                case PRIVATE -> score += 2;
-                case WINDOW -> score += 10;
+                case PEASAAL:
+                    score += 1;
+                    break;
+                case AKNAKOHT:
+                    score += 2;
+                    break;
+                case PRIVAATRUUM:
+                    score += 3;
+                    break;
+                case TERRASS:
+                    score += 1;
+                    break;
             }
-
             scores.put(table, score);
         }
 

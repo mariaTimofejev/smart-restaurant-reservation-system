@@ -12,32 +12,41 @@ import java.time.LocalTime;
 import java.util.Set;
 
 @Configuration
-public class DataInitializer {
+public class DemoDataLoader {
 
     @Bean
-    CommandLineRunner load(RestaurantTableRepository tableRepo,
-                           ReservationRepository reservationRepo) {
+    CommandLineRunner loadDemoData(RestaurantTableRepository tableRepo,
+                                   ReservationRepository reservationRepo) {
         return args -> {
 
-            RestaurantTable t1 = new RestaurantTable(
-                    null, 2, Zone.PEASAAL, 1, 1,
-                    Set.of(TableFeature.QUIET, TableFeature.WINDOW)
-            );
-
-            RestaurantTable t2 = new RestaurantTable(
-                    null, 4, Zone.PEASAAL, 2, 1,
-                    Set.of(TableFeature.NEAR_PLAY_AREA)
-            );
-
-            RestaurantTable t3 = new RestaurantTable(
-                    null, 4, Zone.AKNAKOHT, 3, 1,
-                    Set.of(TableFeature.WINDOW)
-            );
-
+            // Table 1
+            RestaurantTable t1 = new RestaurantTable();
+            t1.setCapacity(2);
+            t1.setZone(Zone.PEASAAL);
+            t1.setPosX(1);
+            t1.setPosY(1);
+            t1.setFeatures(Set.of(TableFeature.QUIET, TableFeature.WINDOW));
             tableRepo.save(t1);
+
+            // Table 2
+            RestaurantTable t2 = new RestaurantTable();
+            t2.setCapacity(4);
+            t2.setZone(Zone.PEASAAL);
+            t2.setPosX(2);
+            t2.setPosY(1);
+            t2.setFeatures(Set.of(TableFeature.NEAR_PLAY_AREA));
             tableRepo.save(t2);
+
+            // Table 3
+            RestaurantTable t3 = new RestaurantTable();
+            t3.setCapacity(4);
+            t3.setZone(Zone.AKNAKOHT);
+            t3.setPosX(3);
+            t3.setPosY(1);
+            t3.setFeatures(Set.of(TableFeature.WINDOW));
             tableRepo.save(t3);
 
+            // Reservations
             reservationRepo.save(new Reservation(
                     t1,
                     LocalDate.of(2026, 3, 22),

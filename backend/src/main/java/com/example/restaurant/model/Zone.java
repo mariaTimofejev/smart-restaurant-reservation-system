@@ -1,8 +1,8 @@
-package com.example.restaurant.model;   
+package com.example.restaurant.model;
 
 public enum Zone {
-    MAIN,
-    TERRACE,
-    PRIVATE,
-    WINDOW
+    PEASAAL,
+    AKNAKOHT,
+    PRIVAATRUUM,
+    TERRASS
 }
