@@ -6,8 +6,6 @@ import com.example.restaurant.repository.ReservationRepository;
 import com.example.restaurant.repository.TableRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -24,9 +22,10 @@ public class TableRecommendationService {
 
     public List<RestaurantTable> findAvailableTables(RecommendationRequest request) {
 
-        LocalDate date = LocalDate.parse(request.getDate());
-        LocalTime time = LocalTime.parse(request.getTime());
-        int people = request.getPeopleCount();
+        // DTO already contains LocalDate and LocalTime
+        var date = request.getDate();
+        var time = request.getTime();
+        int people = request.getPartySize();
 
         return tableRepository.findAll().stream()
                 .filter(t -> t.getCapacity() >= people)

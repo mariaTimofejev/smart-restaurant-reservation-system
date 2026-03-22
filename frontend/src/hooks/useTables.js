@@ -1,22 +1,31 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 export function useTables(date, time) {
   const [tables, setTables] = useState([]);
 
   useEffect(() => {
     async function load() {
-      const base = await fetch("http://localhost:8080/api/tables").then(r => r.json());
-      const status = await fetch(`http://localhost:8080/tables/status?date=${date}&time=${time}`).then(r => r.json());
+      try {
+        const response = await axios.get("http://localhost:8080/api/tables", {
+          params: { date, time }
+        });
 
-      const merged = base.map(t => {
-        const st = status.find(s => s.table.id === t.id);
-        return {
-          ...t,
-          reserved: st ? st.reserved : false
-        };
-      });
+        const data = Array.isArray(response.data) ? response.data : [];
 
-      setTables(merged);
+        const mapped = data.map(item => ({
+          id: item.table.id,
+          capacity: item.table.capacity,
+          posX: item.table.posX,
+          posY: item.table.posY,
+          reserved: item.reserved
+        }));
+
+        setTables(mapped);
+      } catch (err) {
+        console.error("Failed to load tables:", err);
+        setTables([]);
+      }
     }
 
     load();

@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function ReservationForm({ preselectedTableId, date, time, onRefresh }) {
   const [customerName, setCustomerName] = useState("");
   const [partySize, setPartySize] = useState(1);
   const [tableId, setTableId] = useState("");
 
-  // Kui kasutaja klikib lauda, täidame vormi automaatselt
   useEffect(() => {
     if (preselectedTableId) {
       setTableId(preselectedTableId);
@@ -13,25 +13,26 @@ export default function ReservationForm({ preselectedTableId, date, time, onRefr
   }, [preselectedTableId]);
 
   async function submitReservation() {
-    await fetch("http://localhost:8080/api/reservations", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    try {
+      await axios.post("http://localhost:8080/api/reservations", {
         tableId,
         date,
         time,
         customerName,
-        partySize,
-      }),
-    });
+        partySize
+      });
 
-    alert("Broneering tehtud!");
+      alert("Broneering tehtud!");
 
-    if (onRefresh) onRefresh();
+      if (onRefresh) onRefresh();
+    } catch (err) {
+      console.error("Reservation failed:", err);
+      alert("Broneering ebaõnnestus");
+    }
   }
 
   return (
-    <div style={{ padding: "20px", border: "1px solid #ddd", borderRadius: "10px" }}>
+    <div style={{ padding: 20, border: "1px solid #ddd", borderRadius: 10 }}>
       <h2>Tee broneering</h2>
 
       <div>Laud: <input value={tableId} readOnly /></div>
@@ -40,7 +41,10 @@ export default function ReservationForm({ preselectedTableId, date, time, onRefr
 
       <div>
         Kliendi nimi:
-        <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
+        <input
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
+        />
       </div>
 
       <div>

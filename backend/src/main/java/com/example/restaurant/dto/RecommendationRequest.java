@@ -1,21 +1,25 @@
 package com.example.restaurant.dto;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public class RecommendationRequest {
 
-    private int peopleCount;
+    private int partySize;
     private List<String> preferences;
-    private String date;
-    private String time;
+
+    private LocalDate date;
+    private LocalTime time;
+
     private String zone;
 
-    public int getPeopleCount() {
-        return peopleCount;
+    public int getPartySize() {
+        return partySize;
     }
 
-    public void setPeopleCount(int peopleCount) {
-        this.peopleCount = peopleCount;
+    public void setPartySize(int partySize) {
+        this.partySize = partySize;
     }
 
     public List<String> getPreferences() {
@@ -26,19 +30,19 @@ public class RecommendationRequest {
         this.preferences = preferences;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
-    public String getTime() {
+    public LocalTime getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(LocalTime time) {
         this.time = time;
     }
 

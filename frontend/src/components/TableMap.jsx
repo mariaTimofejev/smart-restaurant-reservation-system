@@ -1,40 +1,20 @@
-import { useState } from "react";
-
-export default function TableMap({ tables, recommended, onSelect }) {
-  const [selected, setSelected] = useState(null);
-
+export default function TableMap({ tables, recommended = [], onSelect }) {
   return (
-    <div
-      style={{
-        position: "relative",
-        width: "800px",
-        height: "600px",
-        border: "2px solid #ddd",
-        background: "#fafafa",
-        borderRadius: "10px",
-        boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-      }}
-    >
+    <div style={{ position: "relative", width: 800, height: 600 }}>
       {tables.map((table) => {
         const isRecommended = recommended.includes(table.id);
-        const isSelected = selected === table.id;
 
-        const color = isSelected
-          ? "#1565C0" // sinine valitud laud
+        const color = table.reserved
+          ? "#E53935"      // punane – broneeritud
           : isRecommended
-          ? "#1E88E5" // sinine soovitatud laud
-          : table.reserved
-          ? "#E53935" // punane broneeritud
-          : "#43A047"; // roheline vaba
+          ? "#1E88E5"      // sinine – soovitatud
+          : "#43A047";     // roheline – vaba
 
         return (
           <div
             key={table.id}
-            onClick={() => {
-              setSelected(table.id);
-              onSelect(table.id);
-            }}
-            title={`Laud ${table.id} – mahutab ${table.capacity} inimest`}
+            onClick={() => !table.reserved && onSelect(table.id)}
+            title={`Laud ${table.id} – ${table.capacity} inimest`}
             style={{
               position: "absolute",
               left: table.posX,
@@ -42,16 +22,13 @@ export default function TableMap({ tables, recommended, onSelect }) {
               width: 50,
               height: 50,
               backgroundColor: color,
-              borderRadius: "8px",
+              borderRadius: 8,
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
               color: "white",
-              cursor: "pointer",
-              transition: "0.2s",
-              boxShadow: isSelected
-                ? "0 0 10px rgba(21,101,192,0.8)"
-                : "0 2px 4px rgba(0,0,0,0.2)",
+              cursor: table.reserved ? "not-allowed" : "pointer",
+              border: "2px solid black"
             }}
           >
             {table.id}

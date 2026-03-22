@@ -23,20 +23,23 @@ public class TableController {
         this.tableRepository = tableRepository;
         this.reservationRepository = reservationRepository;
     }
-    @GetMapping("/api/tables")
-    public List<RestaurantTable> getAllTables() {
-        return tableRepository.findAll();
-    }
 
-    @GetMapping("/tables/status")
-    public List<TableWithStatus> getTablesWithStatus(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime time
+    @GetMapping("/api/tables")
+    public List<TableWithStatus> getTables(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate date,
+
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
+            LocalTime time
     ) {
+
         return tableRepository.findAll().stream()
                 .map(table -> new TableWithStatus(
                         table,
-                        reservationRepository.existsByTableAndDateAndTime(table, date, time)
+                        (date != null && time != null)
+                                && reservationRepository.existsByTableAndDateAndTime(table, date, time)
                 ))
                 .toList();
     }
