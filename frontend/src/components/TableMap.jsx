@@ -1,4 +1,9 @@
-export default function TableMap({ tables, recommended = [], onSelect }) {
+export default function TableMap({ tables = [], recommended = [], onSelect }) {
+  
+  if (!tables || tables.length === 0) {
+    return <div>Lauad puuduvad</div>;
+  }
+  
   return (
     <div style={{ position: "relative", width: 800, height: 600 }}>
       {tables.map((table) => {

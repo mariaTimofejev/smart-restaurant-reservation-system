@@ -1,22 +1,28 @@
 import { useTables } from "../hooks/useTables";
 import TableMap from "./TableMap";
 
-export default function RestaurantFloorMap({ date, time, recommended, onSelect }) {
-  const tables = useTables(date, time);
+export default function RestaurantFloorMap({ date, time, recommendedTables, onSelect, onShowFloorMap }) {
+    const tables = useTables(date, time);
 
-  return (
-    <div>
-      <h3>Saali plaan</h3>
+    // Muudame ID-d päris objektideks
+    const recommendedObjects = tables.filter(t => recommendedTables.includes(t.id));
 
-      {tables.length === 0 && <div>Lauad puuduvad või laadimine ebaõnnestus</div>}
+    return (
+        <div>
+            <h3>Saali plaan</h3>
 
-      <div style={{ marginTop: 20 }}>
-        <TableMap
-          tables={tables}
-          recommended={recommended}
-          onSelect={onSelect}
-        />
-      </div>
-    </div>
-  );
+            {tables.length === 0 && <div>Lauad puuduvad või laadimine ebaõnnestus</div>}
+
+            <div style={{ marginTop: 20 }}>
+                <TableMap
+                  tables={recommendedObjects}
+                  recommended={recommendedTables}
+                  onSelect={(id) => {
+                    onSelect(id);
+                    onShowFloorMap();
+                  }}
+                />
+            </div>
+        </div>
+    );
 }
