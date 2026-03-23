@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import "./AdminPage.css";
+import "./MyReservations.css";
 
-export default function AdminPage() {
+export default function MyReservations() {
   const [reservations, setReservations] = useState([]);
 
   useEffect(() => {
@@ -13,10 +13,10 @@ export default function AdminPage() {
 
   return (
     <div className="page">
-      <h1>Admin – Kõik broneeringud</h1>
+      <h1>Minu broneeringud</h1>
 
       {reservations.length === 0 && (
-        <p>Hetkel pole ühtegi broneeringut.</p>
+        <p>Teil pole veel ühtegi broneeringut.</p>
       )}
 
       <table className="styled-table">

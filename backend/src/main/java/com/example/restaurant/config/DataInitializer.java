@@ -1,56 +1,45 @@
 package com.example.restaurant.config;
 
-import com.example.restaurant.model.*;
+import com.example.restaurant.model.Reservation;
+import com.example.restaurant.model.RestaurantTable;
 import com.example.restaurant.repository.ReservationRepository;
-import com.example.restaurant.repository.RestaurantTableRepository;
+import com.example.restaurant.repository.TableRepository;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Set;
+import java.util.Random;
 
-@Configuration
-public class DataInitializer {
+@Component
+public class DataInitializer implements CommandLineRunner {
 
-    @Bean
-    CommandLineRunner load(RestaurantTableRepository tableRepo,
-                           ReservationRepository reservationRepo) {
-        return args -> {
+    private final ReservationRepository reservationRepository;
+    private final TableRepository tableRepository;
 
-            RestaurantTable t1 = new RestaurantTable(
-                    null, 2, Zone.PEASAAL, 1, 1,
-                    Set.of(TableFeature.QUIET, TableFeature.WINDOW)
-            );
+    public DataInitializer(ReservationRepository reservationRepository,
+                           TableRepository tableRepository) {
+        this.reservationRepository = reservationRepository;
+        this.tableRepository = tableRepository;
+    }
 
-            RestaurantTable t2 = new RestaurantTable(
-                    null, 4, Zone.PEASAAL, 2, 1,
-                    Set.of(TableFeature.NEAR_PLAY_AREA)
-            );
+    @Override
+    public void run(String... args) {
+        if (reservationRepository.count() == 0) {
+            Random random = new Random();
 
-            RestaurantTable t3 = new RestaurantTable(
-                    null, 4, Zone.AKNAKOHT, 3, 1,
-                    Set.of(TableFeature.WINDOW)
-            );
-
-            tableRepo.save(t1);
-            tableRepo.save(t2);
-            tableRepo.save(t3);
-
-            reservationRepo.save(new Reservation(
-                    t1,
-                    LocalDate.of(2026, 3, 22),
-                    LocalTime.of(18, 0),
-                    "Maria Test"
-            ));
-
-            reservationRepo.save(new Reservation(
-                    t2,
-                    LocalDate.of(2026, 3, 22),
-                    LocalTime.of(19, 0),
-                    "Mari Maasikas"
-            ));
-        };
+            for (RestaurantTable table : tableRepository.findAll()) {
+                if (random.nextBoolean()) {
+                    reservationRepository.save(
+                            new Reservation(
+                                    table,
+                                    LocalDate.now().plusDays(random.nextInt(5)),
+                                    LocalTime.of(18 + random.nextInt(3), 0),
+                                    "Auto-generated"
+                            )
+                    );
+                }
+            }
+        }
     }
 }

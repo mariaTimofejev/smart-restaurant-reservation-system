@@ -1,15 +1,20 @@
 package com.example.restaurant.controller;
 
-import com.example.restaurant.dto.RecommendationRequest;
 import com.example.restaurant.model.RestaurantTable;
+import com.example.restaurant.model.TableFeature;
+import com.example.restaurant.model.Zone;
 import com.example.restaurant.service.RecommendationService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
-@RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/api/recommend")
+@CrossOrigin(origins = "*")
 public class RecommendationController {
 
     private final RecommendationService recommendationService;
@@ -18,8 +23,24 @@ public class RecommendationController {
         this.recommendationService = recommendationService;
     }
 
-    @PostMapping("/recommend")
-    public List<RestaurantTable> recommendTable(@RequestBody RecommendationRequest request) {
-        return recommendationService.recommendTables(request);
+    @GetMapping
+    public RestaurantTable recommend(
+            @RequestParam LocalDate date,
+            @RequestParam LocalTime time,
+            @RequestParam int people,
+            @RequestParam(required = false) Zone zone,
+            @RequestParam(required = false) List<TableFeature> features
+    ) {
+        Set<TableFeature> featureSet = features != null
+                ? EnumSet.copyOf(features)
+                : EnumSet.noneOf(TableFeature.class);
+
+        return recommendationService.recommend(
+                date,
+                time,
+                people,
+                zone,
+                featureSet
+        );
     }
 }

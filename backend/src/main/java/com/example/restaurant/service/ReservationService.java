@@ -7,6 +7,8 @@ import com.example.restaurant.repository.ReservationRepository;
 import com.example.restaurant.repository.TableRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ReservationService {
 
@@ -21,13 +23,13 @@ public class ReservationService {
 
     public Reservation createReservation(ReservationRequest request) {
 
-        RestaurantTable table = tableRepository.findById(request.getTableId())
+        RestaurantTable table = tableRepository.findById(request.tableId())
                 .orElseThrow(() -> new RuntimeException("Table not found"));
 
         boolean exists = reservationRepository.existsByTableAndDateAndTime(
                 table,
-                request.getDate(),
-                request.getTime()
+                request.date(),
+                request.time()
         );
 
         if (exists) {
@@ -36,11 +38,15 @@ public class ReservationService {
 
         Reservation reservation = new Reservation(
                 table,
-                request.getDate(),
-                request.getTime(),
-                request.getCustomerName()
+                request.date(),
+                request.time(),
+                request.customerName()
         );
 
         return reservationRepository.save(reservation);
+    }
+    
+    public List<Reservation> getAllReservations() {
+        return reservationRepository.findAll();
     }
 }

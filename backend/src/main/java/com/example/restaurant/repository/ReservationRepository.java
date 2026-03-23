@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-    List<Reservation> findByDateAndTime(LocalDate date, LocalTime time);
-
     boolean existsByTableAndDateAndTime(RestaurantTable table, LocalDate date, LocalTime time);
+
+    List<Reservation> findByDateAndTime(LocalDate date, LocalTime time);
 }

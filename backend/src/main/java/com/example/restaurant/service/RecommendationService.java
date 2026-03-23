@@ -1,14 +1,19 @@
 package com.example.restaurant.service;
 
-import com.example.restaurant.dto.RecommendationRequest;
+import com.example.restaurant.model.Reservation;
 import com.example.restaurant.model.RestaurantTable;
 import com.example.restaurant.model.TableFeature;
+import com.example.restaurant.model.Zone;
 import com.example.restaurant.repository.ReservationRepository;
 import com.example.restaurant.repository.TableRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,57 +28,53 @@ public class RecommendationService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<RestaurantTable> recommendTables(RecommendationRequest request) {
+    public RestaurantTable recommend(LocalDate date,
+                                     LocalTime time,
+                                     int people,
+                                     Zone preferredZone,
+                                     Set<TableFeature> preferredFeatures) {
 
-        LocalTime time = request.getTime();
+        List<Reservation> reservations = reservationRepository.findByDateAndTime(date, time);
+        Set<Long> occupied = reservations.stream()
+                .map(r -> r.getTable().getId())
+                .collect(Collectors.toSet());
 
-        List<RestaurantTable> allTables = tableRepository.findAll();
+        List<RestaurantTable> candidates = tableRepository.findAll().stream()
+                .filter(t -> !occupied.contains(t.getId()))
+                .filter(t -> t.getCapacity() >= people)
+                .toList();
 
-        List<RestaurantTable> available = allTables.stream()
-                .filter(t -> !reservationRepository.existsByTableAndDateAndTime(
-                        t, request.getDate(), time))
-                .collect(Collectors.toList());
+        if (candidates.isEmpty()) return null;
 
-        Map<RestaurantTable, Integer> scores = new HashMap<>();
+        Set<TableFeature> prefs = preferredFeatures != null
+                ? preferredFeatures
+                : EnumSet.noneOf(TableFeature.class);
 
-        for (RestaurantTable table : available) {
-            int score = 0;
+        return candidates.stream()
+                .max(Comparator.comparingInt(t -> score(t, people, preferredZone, prefs)))
+                .orElse(null);
+    }
 
-            // Capacity match
-            if (table.getCapacity() == request.getPartySize()) score += 10;
-            else if (table.getCapacity() >= request.getPartySize() + 1 &&
-                     table.getCapacity() <= request.getPartySize() + 2) score += 5;
-            else if (table.getCapacity() > request.getPartySize() + 2) score -= 5;
+    private int score(RestaurantTable t,
+                      int people,
+                      Zone preferredZone,
+                      Set<TableFeature> preferredFeatures) {
 
-            // Preferences
-            if (request.getPreferences() != null) {
-                if (request.getPreferences().contains("WINDOW") &&
-                        table.getFeatures().contains(TableFeature.WINDOW)) score += 10;
+        int score = 0;
 
-                if (request.getPreferences().contains("QUIET") &&
-                        table.getFeatures().contains(TableFeature.QUIET)) score += 10;
-            }
+        score -= (t.getCapacity() - people);
 
-            // Zone score (ONLY ONCE)
-            switch (table.getZone()) {
-                case PEASAAL:
-                    score += 1;
-                    break;
-                case AKNAKOHT:
-                    score += 2;
-                    break;
-                case PRIVAATRUUM:
-                    score += 3;
-                    break;
-                case TERRASS:
-                    score += 1;
-                    break;
-            }
-            scores.put(table, score);
+        if (preferredZone != null && t.getZone() == preferredZone) {
+            score += 5;
         }
 
-        return available.stream()
-                .sorted((a, b) -> scores.get(b) - scores.get(a))
-                .collect(Collectors.toList());
+        if (t.getFeatures() != null) {
+            long matches = t.getFeatures().stream()
+                    .filter(preferredFeatures::contains)
+                    .count();
+            score += matches * 3;
+        }
+
+        return score;
     }
 }
